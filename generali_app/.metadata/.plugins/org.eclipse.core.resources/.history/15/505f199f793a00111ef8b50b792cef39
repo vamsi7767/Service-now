@@ -1,0 +1,67 @@
+package com.service;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.model.Issue;
+import com.model.IssueHistory;
+import com.model.Notification;
+import com.model.User;
+import com.repository.IssueHistoryRepository;
+import com.repository.IssueRepository;
+import com.repository.NotificationRepository;
+
+@Service
+public class IssueService {
+
+    @Autowired
+    private IssueRepository issueRepository;
+
+    @Autowired
+    private IssueHistoryRepository historyRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    public Issue createIssue(Issue issue) {
+        issue.setCreatedAt(LocalDateTime.now());
+        return issueRepository.save(issue);
+    }
+
+    public Issue updateStatus(Long issueId, String newStatus, User user) {
+
+        Issue issue = issueRepository.findById(issueId).orElseThrow();
+
+        String oldStatus = issue.getStatus();
+        issue.setStatus(newStatus);
+        issue.setUpdatedAt(LocalDateTime.now());
+
+        issueRepository.save(issue);
+
+        // Save history
+        IssueHistory history = new IssueHistory();
+        history.setIssue(issue);
+        history.setOldStatus(oldStatus);
+        history.setNewStatus(newStatus);
+        history.setUpdatedBy(user);
+        history.setUpdatedAt(LocalDateTime.now());
+        historyRepository.save(history);
+
+        // Notification
+        Notification notification = new Notification();
+        notification.setUser(issue.getAssignedTo());
+        notification.setMessage("Issue updated to " + newStatus);
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+
+        return issue;
+    }
+
+	public List<Issue> getAll() {
+		// TODO Auto-generated method stub
+		return issueRepository.findAll();
+	}
+}

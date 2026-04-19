@@ -1,0 +1,131 @@
+package com.service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.model.Issue;
+import com.model.IssueHistory;
+import com.model.Notification;
+import com.model.User;
+import com.repository.IssueHistoryRepository;
+import com.repository.IssueRepository;
+import com.repository.NotificationRepository;
+import com.repository.UserRepository;
+
+@Service
+public class IssueService {
+
+    @Autowired
+    private IssueRepository issueRepository;
+
+    @Autowired
+    private IssueHistoryRepository historyRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // ✅ Create Issue
+    public Issue createIssue(Issue issue) {
+
+        if (issue.getAssignedTo() == null || issue.getAssignedTo().getId() == null) {
+            throw new RuntimeException("Assigned user ID is required");
+        }
+
+        if (issue.getCreatedBy() == null || issue.getCreatedBy().getId() == null) {
+            throw new RuntimeException("CreatedBy user ID is required");
+        }
+
+        User assignedUser = userRepository.findById(issue.getAssignedTo().getId())
+                .orElseThrow(() -> new RuntimeException("Assigned user not found"));
+
+        User createdByUser = userRepository.findById(issue.getCreatedBy().getId())
+                .orElseThrow(() -> new RuntimeException("Created user not found"));
+
+        issue.setAssignedTo(assignedUser);
+        issue.setCreatedBy(createdByUser);
+        issue.setCreatedAt(LocalDateTime.now());
+
+        return issueRepository.save(issue);
+    }
+
+    // ✅ Get All
+    public List<Issue> getAll() {
+        return issueRepository.findAll();
+    }
+
+    // ✅ Get By ID
+    public Issue getById(Long id) {
+        return issueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+    }
+
+    // ✅ Update Issue (basic fields)
+    public Issue updateIssue(Long id, Issue updatedIssue) {
+
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        issue.setTitle(updatedIssue.getTitle());
+        issue.setDescription(updatedIssue.getDescription());
+        issue.setUpdatedAt(LocalDateTime.now());
+
+        return issueRepository.save(issue);
+    }
+
+    // ✅ Update Status (FIXED)
+    public Issue updateStatus(Long issueId, String newStatus, Long userId) {
+
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        String oldStatus = issue.getStatus();
+        issue.setStatus(newStatus);
+        issue.setUpdatedAt(LocalDateTime.now());
+
+        issueRepository.save(issue);
+
+        // 🔥 Fetch user from DB
+        User dbUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Save history
+        IssueHistory history = new IssueHistory();
+        history.setIssue(issue);
+        history.setOldStatus(oldStatus);
+        history.setNewStatus(newStatus);
+        history.setUpdatedBy(dbUser);
+        history.setUpdatedAt(LocalDateTime.now());
+
+        historyRepository.save(history);
+
+        // Notification
+        Notification notification = new Notification();
+        notification.setUser(issue.getAssignedTo());
+        notification.setMessage("Issue updated to " + newStatus);
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+
+        notificationRepository.save(notification);
+
+        return issue;
+    }
+
+    // ✅ Delete
+    public void deleteIssue(Long id) {
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        issueRepository.delete(issue);
+    }
+
+    // ✅ Get By Status
+    public List<Issue> getByStatus(String status) {
+        return issueRepository.findByStatus(status);
+    }
+}

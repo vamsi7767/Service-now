@@ -1,0 +1,13 @@
+package com.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.model.Issue;
+
+public interface IssueRepository extends JpaRepository<Issue, Long> {
+	List<Issue> findByStatusIgnoreCase(String status);
+
+	List<Issue> findByAssignedToId(Long userId);
+}

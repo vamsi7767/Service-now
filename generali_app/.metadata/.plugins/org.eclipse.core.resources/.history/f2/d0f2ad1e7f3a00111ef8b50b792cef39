@@ -1,0 +1,158 @@
+package com.service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.model.Issue;
+import com.model.IssueHistory;
+import com.model.Notification;
+import com.model.User;
+import com.repository.IssueHistoryRepository;
+import com.repository.IssueRepository;
+import com.repository.NotificationRepository;
+import com.repository.UserRepository;
+
+@Service
+public class IssueService {
+
+    @Autowired
+    private IssueRepository issueRepository;
+
+    @Autowired
+    private IssueHistoryRepository historyRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // ✅ CREATE ISSUE
+    public Issue createIssue(Issue issue) {
+
+        if (issue.getAssignedTo() == null || issue.getAssignedTo().getId() == null) {
+            throw new RuntimeException("Assigned user ID is required");
+        }
+
+        if (issue.getCreatedBy() == null || issue.getCreatedBy().getId() == null) {
+            throw new RuntimeException("CreatedBy user ID is required");
+        }
+
+        User assignedUser = userRepository.findById(issue.getAssignedTo().getId())
+                .orElseThrow(() -> new RuntimeException("Assigned user not found"));
+
+        User createdByUser = userRepository.findById(issue.getCreatedBy().getId())
+                .orElseThrow(() -> new RuntimeException("Created user not found"));
+
+        issue.setAssignedTo(assignedUser);
+        issue.setCreatedBy(createdByUser);
+        issue.setCreatedAt(LocalDateTime.now());
+        issue.setStatus("OPEN"); // default
+
+        return issueRepository.save(issue);
+    }
+
+    // ✅ GET ALL
+    public List<Issue> getAll() {
+        return issueRepository.findAll();
+    }
+
+    // ✅ GET BY ID
+    public Issue getById(Long id) {
+        return issueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+    }
+
+    // ✅ UPDATE ISSUE
+    public Issue updateIssue(Long id, Issue updatedIssue) {
+
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        issue.setTitle(updatedIssue.getTitle());
+        issue.setDescription(updatedIssue.getDescription());
+        issue.setUpdatedAt(LocalDateTime.now());
+
+        return issueRepository.save(issue);
+    }
+
+    // 🔥 STATUS FLOW VALIDATION
+    private boolean isValidTransition(String oldStatus, String newStatus) {
+
+        if (oldStatus.equals("OPEN") && newStatus.equals("IN_PROGRESS")) {
+            return true;
+        }
+
+        if (oldStatus.equals("IN_PROGRESS") && newStatus.equals("COMPLETED")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // ✅ UPDATE STATUS (FINAL)
+    public Issue updateStatus(Long issueId, String newStatus, Long userId) {
+
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        String oldStatus = issue.getStatus();
+
+        // 🔥 Fetch user
+        User dbUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 🔥 Validate transition
+        if (!isValidTransition(oldStatus, newStatus)) {
+            throw new RuntimeException("Invalid status transition");
+        }
+
+        // 🔥 Role-based control
+        if ("USER".equalsIgnoreCase(dbUser.getRole())) {
+
+            if (!(oldStatus.equals("OPEN") && newStatus.equals("IN_PROGRESS"))) {
+                throw new RuntimeException("USER can only move OPEN → IN_PROGRESS");
+            }
+        }
+
+        // ✅ Update issue
+        issue.setStatus(newStatus);
+        issue.setUpdatedAt(LocalDateTime.now());
+        issueRepository.save(issue);
+
+        // ✅ Save history
+        IssueHistory history = new IssueHistory();
+        history.setIssue(issue);
+        history.setOldStatus(oldStatus);
+        history.setNewStatus(newStatus);
+        history.setUpdatedBy(dbUser);
+        history.setUpdatedAt(LocalDateTime.now());
+        historyRepository.save(history);
+
+        // ✅ Notification
+        Notification notification = new Notification();
+        notification.setUser(issue.getAssignedTo());
+        notification.setMessage("Issue updated to " + newStatus);
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+
+        return issue;
+    }
+
+    // ✅ DELETE
+    public void deleteIssue(Long id) {
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        issueRepository.delete(issue);
+    }
+
+    // ✅ GET BY STATUS
+    public List<Issue> getByStatus(String status) {
+        return issueRepository.findByStatus(status);
+    }
+}

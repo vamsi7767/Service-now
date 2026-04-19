@@ -1,0 +1,93 @@
+package com.service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.model.Issue;
+import com.model.IssueHistory;
+import com.model.Notification;
+import com.model.User;
+import com.repository.IssueHistoryRepository;
+import com.repository.IssueRepository;
+import com.repository.NotificationRepository;
+import com.repository.UserRepository;
+
+@Service
+public class IssueService {
+
+    @Autowired
+    private IssueRepository issueRepository;
+
+    @Autowired
+    private IssueHistoryRepository historyRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserRepository userRepository; // 🔥 IMPORTANT
+
+    // ✅ FIXED METHOD
+    public Issue createIssue(Issue issue) {
+
+        if (issue.getAssignedTo() == null || issue.getAssignedTo().getId() == null) {
+            throw new RuntimeException("Assigned user ID is required");
+        }
+
+        if (issue.getCreatedBy() == null || issue.getCreatedBy().getId() == null) {
+            throw new RuntimeException("CreatedBy user ID is required");
+        }
+
+        User assignedUser = userRepository.findById(issue.getAssignedTo().getId())
+                .orElseThrow(() -> new RuntimeException("Assigned user not found"));
+
+        User createdByUser = userRepository.findById(issue.getCreatedBy().getId())
+                .orElseThrow(() -> new RuntimeException("Created user not found"));
+
+        issue.setAssignedTo(assignedUser);
+        issue.setCreatedBy(createdByUser);
+
+        issue.setCreatedAt(LocalDateTime.now());
+
+        return issueRepository.save(issue);
+    }
+
+    // ✅ STATUS UPDATE (minor improvement)
+    public Issue updateStatus(Long issueId, String newStatus, User user) {
+
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        String oldStatus = issue.getStatus();
+        issue.setStatus(newStatus);
+        issue.setUpdatedAt(LocalDateTime.now());
+
+        issueRepository.save(issue);
+
+        // Save history
+        IssueHistory history = new IssueHistory();
+        history.setIssue(issue);
+        history.setOldStatus(oldStatus);
+        history.setNewStatus(newStatus);
+        history.setUpdatedBy(user);
+        history.setUpdatedAt(LocalDateTime.now());
+        historyRepository.save(history);
+
+        // Notification
+        Notification notification = new Notification();
+        notification.setUser(issue.getAssignedTo());
+        notification.setMessage("Issue updated to " + newStatus);
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+
+        return issue;
+    }
+
+    public List<Issue> getAll() {
+        return issueRepository.findAll();
+    }
+}
