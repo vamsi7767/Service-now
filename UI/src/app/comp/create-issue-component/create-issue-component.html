@@ -1,0 +1,35 @@
+<div class="issue-fullscreen">
+  <div class="issue-container mat-elevation-z8">
+    <h1 class="form-title">Create Issue</h1>
+
+    <form (ngSubmit)="createIssue()" #issueForm="ngForm">
+      <!-- Title -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Title</mat-label>
+        <input matInput [(ngModel)]="issue.title" name="title" required />
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput rows="6" [(ngModel)]="issue.description" name="description" required></textarea>
+      </mat-form-field>
+
+      <!-- Assigned To -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Assign To</mat-label>
+        <mat-select [(ngModel)]="issue.assignedTo.id" name="assignedTo" required>
+          <mat-option *ngFor="let user of users" [value]="user.id">
+            {{ user.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Submit -->
+      <button mat-raised-button color="accent" class="submit-btn" [disabled]="issueForm.invalid">
+        <mat-icon>check_circle</mat-icon>
+        Create Issue
+      </button>
+    </form>
+  </div>
+</div>

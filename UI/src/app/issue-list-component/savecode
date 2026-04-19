@@ -1,0 +1,26 @@
+ Comments Expansion Panel BELOW the table -->
+  <div *ngFor="let issue of (issues$ | async)">
+   <mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <!-- Replace text with an icon -->
+      <mat-icon color="primary">comment</mat-icon>
+      <span style="margin-left:8px;">Issue #{{ issue.id }} Comments</span>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <!-- Existing comments -->
+  <div *ngFor="let c of issue.comments">
+    <strong>{{ c.user?.name }}</strong> ({{ c.createdAt | date:'short' }}):
+    <p>{{ c.message}}</p>
+  </div>
+
+  <!-- Add new comment -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Add Comment</mat-label>
+    <textarea matInput [(ngModel)]="issue.commentText"></textarea>
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="addComment(issue.id, issue.commentText)">
+    Submit
+  </button>
+</mat-expansion-panel> 

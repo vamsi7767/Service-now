@@ -1,0 +1,61 @@
+<mat-toolbar color="primary" class="admin-header">
+  <span>Admin Dashboard</span>
+  <span class="spacer"></span>
+
+  <!-- Stats inline in toolbar -->
+  <div class="toolbar-stats" *ngIf="stats$ | async as stats">
+    <span class="stat open">Open: {{ stats.open || 0 }}</span>
+    <span class="stat closed">Closed: {{ stats.closed || 0 }}</span>
+    <span class="stat in-progress">In Progress: {{ stats.inProgress || 0 }}</span>
+    <span class="stat total">Total: {{ stats.total || 0 }}</span>
+  </div>
+
+  <button mat-icon-button (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
+</mat-toolbar>
+
+<!-- Existing Admin Cards -->
+<div class="admin-container">
+  <!-- your existing cards -->
+</div>
+
+
+<!-- Existing Admin Cards -->
+<div class="admin-container">
+  <mat-card class="admin-card">
+    <mat-card-title>User Management</mat-card-title>
+    <mat-card-content>
+      <button mat-raised-button color="accent" routerLink="/users">
+        <mat-icon>group</mat-icon> Manage Users
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="admin-card">
+    <mat-card-title>Issue Management</mat-card-title>
+    <mat-card-content>
+      <button mat-raised-button color="warn" routerLink="/issue">
+        <mat-icon>bug_report</mat-icon> Manage Issues
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="admin-card">
+    <mat-card-title>Issue Management</mat-card-title>
+    <mat-card-content>
+      <button mat-raised-button color="warn" routerLink="/create">
+        <mat-icon>bug_report</mat-icon> Create Issue
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="admin-card">
+    <mat-card-title>Reports</mat-card-title>
+    <mat-card-content>
+      <button mat-raised-button color="primary" routerLink="/reports">
+        <mat-icon>bar_chart</mat-icon> View Reports
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

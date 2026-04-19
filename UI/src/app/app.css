@@ -1,0 +1,55 @@
+/* Logo icon in header */
+.logo-icon {
+  height: 32px;
+  width: 32px;
+  margin-right: 10px;
+}
+
+/* Footer icon */
+.footer-icon {
+  height: 24px;
+  width: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+/* Footer */
+.app-footer {
+  background: linear-gradient(90deg, #1976d2, #42a5f5);
+  color: white;
+  padding: 12px 20px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 6px;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}

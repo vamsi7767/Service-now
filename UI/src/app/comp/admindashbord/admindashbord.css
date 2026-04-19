@@ -1,0 +1,59 @@
+.admin-header {
+  font-weight: bold;
+}
+
+.admin-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 20px;
+}
+
+.admin-card {
+  width: 300px;
+  margin: 20px;
+  padding: 16px;
+  border-radius: 12px;
+}
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  width: 200px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.stat-card.open mat-card-content { color: #1976d2; }       /* Blue */
+.stat-card.closed mat-card-content { color: #388e3c; }    /* Green */
+.stat-card.in-progress mat-card-content { color: #fbc02d; } /* Amber */
+.stat-card.total mat-card-content { color: #d32f2f; }     /* Red */
+
+.toolbar-stats {
+  display: flex;
+  gap: 16px;
+  margin-right: 20px;
+  font-weight: bold;
+}
+
+.toolbar-stats {
+  display: flex;
+  gap: 16px;
+  margin-right: 20px;
+  font-weight: bold;
+}
+
+.toolbar-stats .stat {
+  font-size: 14px;
+}
+
+.toolbar-stats .open { color: #1976d2; }       /* Blue */
+.toolbar-stats .closed { color: #388e3c; }    /* Green */
+.toolbar-stats .in-progress { color: #fbc02d; } /* Amber */
+.toolbar-stats .total { color: #d32f2f; }     /* Red */
+

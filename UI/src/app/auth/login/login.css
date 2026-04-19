@@ -1,0 +1,102 @@
+/* Icon above login box */
+.login-logo {
+  height: 75px;
+  width: 80px;
+  margin-bottom: 15px;
+  border-radius: 50%;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  animation: popIn 0.6s ease;
+}
+
+/* Auth box */
+.auth-box {
+  width: 340px;
+  margin: 100px auto;
+  padding: 30px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1e1e2f, #2c3e50);
+  color: #fff;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  text-align: center;
+}
+
+/* Inputs rounded */
+.auth-box input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  font-size: 14px;
+  transition: box-shadow 0.3s ease;
+}
+
+.auth-box input:focus {
+  outline: none;
+  box-shadow: 0 0 8px #42a5f5;
+}
+
+/* Button with gradient */
+.auth-box button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: linear-gradient(90deg, #25D366, #43a047);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-box button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(67,160,71,0.5);
+}
+
+/* Register link */
+.auth-box a {
+  display: inline-block;
+  margin-top: 12px;
+  color: #42a5f5;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-box a:hover {
+  text-decoration: underline;
+}
+
+/* Animation for icon */
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+/* Success snackbar */
+.login-success-snackbar,
+.register-success-snackbar {
+  background: linear-gradient(90deg, #43a047, #66bb6a);
+  color: #fff;
+  font-weight: bold;
+  border-radius: 8px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-error-snackbar,
+.register-error-snackbar {
+  background: linear-gradient(90deg, #ef5350, #e53935);
+  color: #fff;
+  font-weight: bold;
+  border-radius: 8px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

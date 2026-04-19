@@ -1,0 +1,36 @@
+.issue-fullscreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120vh; /* Full screen height */
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+}
+
+.issue-container {
+  width: 80%; /* Take most of the screen */
+  max-width: 900px;
+  padding: 40px;
+  border-radius: 16px;
+  background: #fff;
+  color: #333;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2a5298;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.submit-btn {
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 12px;
+}

@@ -1,0 +1,17 @@
+<div class="auth-box">
+  <!-- Small logo/image above register -->
+  <img src="assets/create.webp" alt="Register Icon" class="login-logo" />
+
+  <h2>Create Account</h2>
+
+  <input placeholder="Name" [(ngModel)]="user.name">
+  <input placeholder="Email" [(ngModel)]="user.email">
+  <input type="password" placeholder="Password" [(ngModel)]="user.password">
+
+  <button (click)="register()">Register</button>
+
+  <p>
+    Already have account?
+    <a routerLink="/login">Login</a>
+  </p>
+</div>
